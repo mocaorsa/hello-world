@@ -1,9 +1,6 @@
 ## Zero Trust Architecture Diagram – Golden State Water Treatment Facility
 
 ```mermaid
-# Zero Trust Architecture Diagram
-
-```mermaid
 flowchart TB
 
 %% USERS
