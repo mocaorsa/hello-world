@@ -1,98 +1,59 @@
 ## Zero Trust Architecture Diagram – Golden State Water Treatment Facility
 
 ```mermaid
+# Zero Trust Architecture Diagram
+
+```mermaid
 flowchart TB
 
-%% =========================
 %% USERS
-%% =========================
 User1[HR Admin]
-User2[HR Analyst]
-User3[OT Operator]
-User4[OT Engineer]
+User2[OT Engineer]
 
-%% =========================
-%% IDENTITY & POLICY
-%% =========================
-IdP[Identity Provider (SSO + MFA)]
+%% CORE ZTA COMPONENTS
+subgraph ZTA_Core [Zero Trust Core Components]
 PE[Policy Engine]
-PDP[Policy Decision Point]
-PIP[Policy Information Point\n(Device Health, Risk, Location, Behavior)]
-SIEM[SIEM / UEBA]
-PAM[Privileged Access Management (JIT)]
-
-%% =========================
-%% ENFORCEMENT
-%% =========================
-IAP[Identity-Aware Proxy / ZTNA Gateway]
+PA[Policy Administrator]
 PEP[Policy Enforcement Point]
-VPN[Managed VPN (Corp Devices Only)]
-
-%% =========================
-%% IT RESOURCES (HR)
-%% =========================
-subgraph IT Zone (Confidentiality Focus)
-HR1[HR Files Server]
-HR2[Payroll PII Repository]
-HR3[Certification Records System]
 end
 
-%% =========================
-%% OT RESOURCES
-%% =========================
-subgraph OT Zone (Safety & Availability Focus)
-SCADA[SCADA Control System]
+%% SIGNAL SOURCES
+IdP[Identity Provider + MFA]
+PIP[Device Health / Risk / Location]
+SIEM[Behavior Analytics / UEBA]
+
+%% TRANSPORT
+VPN[Managed VPN<br/>Transport Only]
+
+%% RESOURCES
+subgraph IT_Zone
+HR[HR Files Server]
+end
+
+subgraph OT_Zone
+SCADA[SCADA System]
 PLC[PLC Controllers]
-CHEM[Chemical Dosing System]
-HIST[Historian Database]
-PUMP[Remote Pump Stations]
 end
 
-%% =========================
-%% USER AUTH FLOW
-%% =========================
+%% AUTHENTICATION FLOW
 User1 --> IdP
 User2 --> IdP
-User3 --> IdP
-User4 --> IdP
 
 IdP --> PE
 PIP --> PE
-SIEM --> PIP
-PE --> PDP
-PDP --> IAP
-PDP --> PAM
+SIEM --> PE
 
-%% =========================
-%% IT ACCESS FLOW
-%% =========================
-IAP --> HR1
-IAP --> HR2
-IAP --> HR3
+%% DECISION FLOW
+PE --> PA
+PA --> PEP
 
-%% =========================
-%% OT ACCESS FLOW
-%% =========================
-User3 --> VPN
-User4 --> VPN
-VPN --> IAP
-IAP --> SCADA
+%% ACCESS FLOW
+User2 --> VPN
+VPN --> PEP
+User1 --> PEP
+
+PEP --> HR
+PEP --> SCADA
+
 SCADA --> PLC
-SCADA --> CHEM
-SCADA --> HIST
-SCADA --> PUMP
-
-%% =========================
-%% PRIVILEGED ACCESS FLOW
-%% =========================
-User4 --> PAM
-PAM --> IAP
-
-%% =========================
-%% MONITORING LOOP
-%% =========================
-HR1 --> SIEM
-SCADA --> SIEM
-PLC --> SIEM
-HIST --> SIEM
-```
+``````
